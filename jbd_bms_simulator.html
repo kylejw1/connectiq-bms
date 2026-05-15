@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>JBD BMS Simulator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 20px; }
+  h1 { font-size: 16px; font-weight: 500; color: #aaa; margin-bottom: 16px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #1a3a2a; color: #4ade80; margin-bottom: 16px; border: 1px solid #2a5a3a; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .card { background: #252525; border: 1px solid #333; border-radius: 10px; padding: 14px 16px; }
+  .clabel { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .cval  { font-size: 24px; font-weight: 600; }
+  .green { color: #4ade80; }
+  .amber { color: #fbbf24; }
+  .red   { color: #f87171; }
+  .white { color: #e0e0e0; }
+  .two-col { display: grid; grid-template-columns: 1fr 220px; gap: 16px; align-items: start; }
+  .section { font-size: 11px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+  .srow { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .srow label { font-size: 13px; color: #888; width: 110px; flex-shrink: 0; }
+  .srow input[type=range] { flex: 1; accent-color: #4ade80; }
+  .srow .ro { font-size: 13px; font-weight: 500; color: #e0e0e0; width: 60px; text-align: right; }
+  .pkt { background: #111; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: #888; word-break: break-all; line-height: 1.8; border: 1px solid #2a2a2a; }
+  .pkt .hi { color: #4ade80; font-weight: 600; }
+  .pkt .dim { color: #555; }
+  .legend { font-size: 11px; color: #555; margin-top: 6px; }
+  .watch { background: #0d0d0d; border-radius: 28px; width: 180px; height: 180px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 3px solid #2a2a2a; position: relative; }
+  .wgrid { display: grid; grid-template-columns: 1fr 1fr; width: 148px; height: 148px; position: relative; }
+  .wcell { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .wnum  { font-size: 18px; font-weight: 700; font-family: monospace; color: #fff; line-height: 1; }
+  .wlbl  { font-size: 9px; color: #555; margin-top: 3px; letter-spacing: .06em; }
+  .wdivh { position: absolute; left: 6px; right: 6px; top: 50%; height: 1px; background: #2a2a2a; }
+  .wdivv { position: absolute; top: 6px; bottom: 6px; left: 50%; width: 1px; background: #2a2a2a; }
+  .wtemp { position: absolute; top: 7px; right: 10px; font-size: 9px; color: #555; font-family: monospace; }
+  .wcap  { font-size: 11px; color: #555; margin-top: 8px; text-align: center; }
+</style>
+</head>
+<body>
+<h1>JBD BMS → Fenix 7 Connect IQ data field — PoC simulator</h1>
+<div class="badge"><span class="dot"></span> JBD-SP04S034 connected (simulated)</div>
+
+<div class="grid">
+  <div class="card"><div class="clabel">State of charge</div><div class="cval green" id="soc-val">78%</div></div>
+  <div class="card"><div class="clabel">Power draw</div><div class="cval white" id="pwr-val">338 W</div></div>
+  <div class="card"><div class="clabel">Pack voltage</div><div class="cval white" id="volt-val">52.1 V</div></div>
+  <div class="card"><div class="clabel">Remaining capacity</div><div class="cval white" id="cap-val">9.4 Ah</div></div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="section">Adjust BMS values</div>
+    <div class="srow"><label>SOC %</label><input type="range" min="0" max="100" value="78" id="sl-soc" step="1"><span class="ro" id="out-soc">78%</span></div>
+    <div class="srow"><label>Voltage (V)</label><input type="range" min="36" max="84" value="52.1" step="0.1" id="sl-volt"><span class="ro" id="out-volt">52.1 V</span></div>
+    <div class="srow"><label>Current (A)</label><input type="range" min="0" max="30" value="6.5" step="0.1" id="sl-curr"><span class="ro" id="out-curr">6.5 A</span></div>
+    <div class="srow"><label>Capacity (Ah)</label><input type="range" min="0" max="20" value="9.4" step="0.1" id="sl-cap"><span class="ro" id="out-cap">9.4 Ah</span></div>
+    <div class="srow"><label>Temp (°C)</label><input type="range" min="-10" max="60" value="28" step="1" id="sl-temp"><span class="ro" id="out-temp">28°C</span></div>
+
+    <div class="section">JBD response packet (live)</div>
+    <div class="pkt" id="pkt"></div>
+    <div class="legend">
+      <span style="color:#4ade80">■</span> voltage &nbsp;
+      <span style="color:#4ade80">■</span> current &nbsp;
+      <span style="color:#4ade80">■</span> SOC &nbsp;
+      <span style="color:#4ade80">■</span> temp &nbsp;
+      <span style="color:#555">■</span> checksum + end byte
+    </div>
+  </div>
+
+  <div>
+    <div class="section" style="text-align:center">Fenix 7 preview</div>
+    <div class="watch">
+      <div class="wgrid">
+        <div class="wdivh"></div>
+        <div class="wdivv"></div>
+        <div class="wcell"><span class="wnum green" id="w-soc">78%</span><span class="wlbl">SOC</span></div>
+        <div class="wcell"><span class="wnum" id="w-pwr">338</span><span class="wlbl">WATTS</span></div>
+        <div class="wcell"><span class="wnum" id="w-volt">52.1</span><span class="wlbl">VOLTS</span></div>
+        <div class="wcell"><span class="wnum" id="w-cap">9.4</span><span class="wlbl">Ah LEFT</span></div>
+        <span class="wtemp" id="w-temp">28°C</span>
+      </div>
+    </div>
+    <div class="wcap">cycling activity data field</div>
+  </div>
+</div>
+
+<script>
+function toHex(b){ return b.toString(16).toUpperCase().padStart(2,'0'); }
+function buildPkt(voltRaw,currRaw,capRaw,soc,tempRaw){
+  var b=[0xDD,0x03,0x00,0x1D,
+    (voltRaw>>8)&0xFF,voltRaw&0xFF,
+    (currRaw>>8)&0xFF,currRaw&0xFF,
+    (capRaw>>8)&0xFF,capRaw&0xFF,
+    0x04,0xB0,0x00,0x00,0x00,0x00,
+    soc,
+    0x00,0x02,0x04,0x10,0x00,0x00,0x1B,0x00,
+    (tempRaw>>8)&0xFF,tempRaw&0xFF,
+    0x0B,0x0F,0x0B,0x0F];
+  var sum=0; for(var i=2;i<b.length;i++) sum+=b[i];
+  var chk=(0x10000-(sum&0xFFFF))&0xFFFF;
+  b.push((chk>>8)&0xFF,chk&0xFF,0x77);
+  return b;
+}
+function update(){
+  var soc=parseInt(document.getElementById('sl-soc').value);
+  var volt=parseFloat(document.getElementById('sl-volt').value);
+  var curr=parseFloat(document.getElementById('sl-curr').value);
+  var cap=parseFloat(document.getElementById('sl-cap').value);
+  var temp=parseInt(document.getElementById('sl-temp').value);
+  var pwr=Math.round(volt*curr);
+  var voltRaw=Math.round(volt*100);
+  var currRaw=Math.round(curr*100)&0xFFFF;
+  var capRaw=Math.round(cap*100);
+  var tempRaw=Math.round(temp*10+2731);
+
+  document.getElementById('out-soc').textContent=soc+'%';
+  document.getElementById('out-volt').textContent=volt.toFixed(1)+' V';
+  document.getElementById('out-curr').textContent=curr.toFixed(1)+' A';
+  document.getElementById('out-cap').textContent=cap.toFixed(1)+' Ah';
+  document.getElementById('out-temp').textContent=temp+'°C';
+
+  document.getElementById('soc-val').textContent=soc+'%';
+  document.getElementById('pwr-val').textContent=pwr+' W';
+  document.getElementById('volt-val').textContent=volt.toFixed(1)+' V';
+  document.getElementById('cap-val').textContent=cap.toFixed(1)+' Ah';
+
+  var sc=document.getElementById('soc-val');
+  sc.className='cval '+(soc>50?'green':soc>20?'amber':'red');
+
+  document.getElementById('w-soc').textContent=soc+'%';
+  document.getElementById('w-pwr').textContent=pwr;
+  document.getElementById('w-volt').textContent=volt.toFixed(1);
+  document.getElementById('w-cap').textContent=cap.toFixed(1);
+  document.getElementById('w-temp').textContent=temp+'°C';
+  var ws=document.getElementById('w-soc');
+  ws.className='wnum '+(soc>50?'green':soc>20?'amber':'red');
+
+  var p=buildPkt(voltRaw,currRaw,capRaw,soc,tempRaw);
+  var h=p.map(toHex);
+  document.getElementById('pkt').innerHTML=
+    h[0]+' '+h[1]+' '+h[2]+' '+h[3]+' '+
+    '<span class="hi">'+h[4]+' '+h[5]+'</span> '+
+    '<span class="hi">'+h[6]+' '+h[7]+'</span> '+
+    h.slice(8,16).join(' ')+' '+
+    '<span class="hi">'+h[16]+'</span> '+
+    h.slice(17,25).join(' ')+' '+
+    '<span class="hi">'+h[25]+' '+h[26]+'</span> '+
+    h.slice(27,p.length-3).join(' ')+' '+
+    '<span class="dim">'+h[p.length-3]+' '+h[p.length-2]+' '+h[p.length-1]+'</span>';
+}
+['sl-soc','sl-volt','sl-curr','sl-cap','sl-temp'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',update);
+});
+update();
+</script>
+</body>
+</html>
