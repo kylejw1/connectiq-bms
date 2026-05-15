@@ -1,7 +1,15 @@
 <?xml version="1.0"?>
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
-    <iq:application entry="JBDBmsDataFieldApp" id="a3b4c5d6-e7f8-9012-3456-789abcdef012" minSdkVersion="5.2.0" name="@Strings.AppName" type="datafield" launcherIcon="@Drawables.LauncherIcon">
+    <iq:application entry="BmsDataFieldApp" id="e179d2ed-4ecf-4ba4-a7a9-fa3a3908cb82" minSdkVersion="5.2.0" name="@Strings.AppName" type="datafield" launcherIcon="@Drawables.LauncherIcon">
+        <!--
+          Only devices whose SDK device data is installed locally can be listed
+          here. Add more via the Connect IQ SDK Manager (download device data
+          for fenix7pro, epix2, fr265, fr955, etc.) and then add the
+          corresponding <iq:product> entry below.
+        -->
         <iq:products>
+            <iq:product id="fenix7"/>
+            <iq:product id="fenix7pro"/>
             <iq:product id="fenix7pronowifi"/>
         </iq:products>
         <iq:permissions>

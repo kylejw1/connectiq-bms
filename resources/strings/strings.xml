@@ -1,4 +1,48 @@
 <?xml version="1.0"?>
 <strings>
-  <string id="AppName">JBD BMS</string>
+  <string id="AppName">BMS</string>
+
+  <string id="SettingBmsType">BMS type</string>
+  <string id="BmsTypeJbd">JBD / Xiaoxiang</string>
+  <string id="BmsTypeJk">JK BMS (experimental)</string>
+  <string id="BmsTypeEm3ev">EM3EV (experimental)</string>
+
+  <string id="SettingDeviceFilter">Device name filter</string>
+  <string id="SettingDeviceFilterPrompt">Substring of BLE device name (leave blank to use defaults)</string>
+
+  <string id="SettingLayout">Layout</string>
+  <string id="LayoutAuto">Auto (fit screen)</string>
+  <string id="LayoutOne">One field</string>
+  <string id="LayoutTwo">Two fields</string>
+  <string id="LayoutThree">Three fields</string>
+  <string id="LayoutFour">Four fields</string>
+
+  <string id="SettingField1">Field 1</string>
+  <string id="SettingField2">Field 2</string>
+  <string id="SettingField3">Field 3</string>
+  <string id="SettingField4">Field 4</string>
+
+  <string id="FieldNone">(none)</string>
+  <string id="FieldVoltage">Voltage</string>
+  <string id="FieldCurrent">Current</string>
+  <string id="FieldPower">Power</string>
+  <string id="FieldCapacity">Capacity remaining</string>
+  <string id="FieldDesignCapacity">Capacity design</string>
+  <string id="FieldSoc">State of charge</string>
+  <string id="FieldTemp">Temperature (max)</string>
+  <string id="FieldTempMin">Temperature (min)</string>
+  <string id="FieldCellMin">Cell min voltage</string>
+  <string id="FieldCellMax">Cell max voltage</string>
+  <string id="FieldCellDelta">Cell delta (mV)</string>
+  <string id="FieldCycles">Cycle count</string>
+
+  <string id="SettingTempUnit">Temperature unit</string>
+  <string id="TempUnitC">Celsius</string>
+  <string id="TempUnitF">Fahrenheit</string>
+
+  <string id="SettingLowAh">Low capacity threshold (Ah)</string>
+  <string id="SettingLowVoltage">Low voltage threshold (V)</string>
+  <string id="SettingLowSoc">Low SOC threshold (%) — red bg</string>
+  <string id="SettingWarnSoc">Warn SOC threshold (%) — yellow text</string>
+  <string id="SettingPollInterval">Poll interval (seconds)</string>
 </strings>

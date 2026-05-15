@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<properties>
+    <!-- Enum codes — see Config.mc for the code↔id mapping. -->
+    <property id="bmsType"           type="number">0</property>
+    <property id="deviceNameFilter"  type="string"></property>
+
+    <property id="layoutId"          type="number">0</property>
+    <property id="field1"            type="number">1</property>
+    <property id="field2"            type="number">2</property>
+    <property id="field3"            type="number">4</property>
+    <property id="field4"            type="number">6</property>
+
+    <property id="tempUnit"            type="number">0</property>
+    <property id="lowAhThreshold"      type="float">3.0</property>
+    <property id="lowVoltageThreshold" type="float">42.0</property>
+    <property id="lowSocPct"           type="number">30</property>
+    <property id="warnSocPct"          type="number">50</property>
+    <property id="pollIntervalTicks"   type="number">1</property>
+</properties>

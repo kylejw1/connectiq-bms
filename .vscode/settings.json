@@ -1,0 +1,7 @@
+{
+    "monkeyC.developerKeyPath": "/home/kyle/.Garmin/developer_key",
+    "monkeyC.javaPath": "",
+    "files.associations": {
+        "*.mc": "monkeyc"
+    }
+}
