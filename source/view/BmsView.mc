@@ -3,6 +3,7 @@ import Toybox.WatchUi;
 import Toybox.Graphics;
 import Toybox.System;
 import Toybox.BluetoothLowEnergy;
+import Toybox.FitContributor;
 
 class BmsView extends WatchUi.DataField {
 
@@ -16,6 +17,13 @@ class BmsView extends WatchUi.DataField {
     var _bmsTypeChangedNeedsRestart;
     var _currentAvg;
 
+    // FIT record fields — surfaced as time-series graphs in Garmin Connect
+    // after the activity syncs to the phone.
+    var _fitVoltage;
+    var _fitCurrentAvg;
+    var _fitPowerAvg;
+    var _fitSoc;
+
     function initialize() {
         DataField.initialize();
         _tickCount = 0;
@@ -28,6 +36,27 @@ class BmsView extends WatchUi.DataField {
         _ble        = new BleManager(_driver, _config, _reading);
         _currentAvg = new CurrentAverager();
         _ble.start();
+
+        _fitVoltage = createField(
+            "Battery Voltage", 0,
+            FitContributor.DATA_TYPE_FLOAT,
+            { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "V" }
+        );
+        _fitCurrentAvg = createField(
+            "Battery Current (avg)", 1,
+            FitContributor.DATA_TYPE_FLOAT,
+            { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "A" }
+        );
+        _fitPowerAvg = createField(
+            "Battery Power (avg)", 2,
+            FitContributor.DATA_TYPE_FLOAT,
+            { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "W" }
+        );
+        _fitSoc = createField(
+            "Battery SOC", 3,
+            FitContributor.DATA_TYPE_UINT8,
+            { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "%" }
+        );
 
         _layout = _pickLayout(null);
     }
@@ -56,11 +85,34 @@ class BmsView extends WatchUi.DataField {
             _reading.currentAvgA = null;
         }
 
+        _recordFit();
+
         var n = _config.pollIntervalTicks;
         if (n < 1) { n = 1; }
         if (_tickCount >= n) {
             _tickCount = 0;
             _ble.poll();
+        }
+    }
+
+    // Push current reading into the FIT record stream. Skip writes when the
+    // value is missing so Garmin Connect shows gaps rather than zero-spikes
+    // before connection / on dropout.
+    hidden function _recordFit() as Void {
+        if (!_reading.connected) { return; }
+
+        if (_reading.voltageV != null) {
+            _fitVoltage.setData(_reading.voltageV);
+        }
+        var avgA = _reading.currentAvgA;
+        if (avgA != null) {
+            _fitCurrentAvg.setData(avgA);
+            if (_reading.voltageV != null) {
+                _fitPowerAvg.setData(_reading.voltageV * avgA);
+            }
+        }
+        if (_reading.socPct != null) {
+            _fitSoc.setData(_reading.socPct);
         }
     }
 
