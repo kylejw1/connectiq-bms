@@ -2,25 +2,27 @@ import Toybox.Lang;
 
 // Rolling-window mean of current readings. Smooths the displayed current so
 // the data field shows a usable "average draw" instead of jumpy instantaneous
-// values. Sampled once per compute() tick (~1 Hz), giving ~30 s of history.
+// values. Sampled once per compute() tick (~1 Hz), so window size in samples
+// equals window size in seconds.
 class CurrentAverager {
-    const WINDOW = 30;
 
+    var _window;
     var _samples;
     var _idx;
     var _count;
 
-    function initialize() {
-        _samples = new [WINDOW];
-        _idx = 0;
-        _count = 0;
+    function initialize(window as Number) {
+        _window  = window;
+        _samples = new [window];
+        _idx     = 0;
+        _count   = 0;
     }
 
     function sample(v) as Void {
         if (v == null) { return; }
         _samples[_idx] = v;
-        _idx = (_idx + 1) % WINDOW;
-        if (_count < WINDOW) { _count++; }
+        _idx = (_idx + 1) % _window;
+        if (_count < _window) { _count++; }
     }
 
     function average() {

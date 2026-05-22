@@ -9,13 +9,14 @@ class BmsView extends WatchUi.DataField {
 
     var _config;
     var _reading;
-    var _driver;
     var _ble;
     var _layout;
     var _tickCount;
     var _registeredBmsType;
     var _bmsTypeChangedNeedsRestart;
     var _currentAvg;
+    var _activitySumA;
+    var _activityCountA;
 
     // FIT record fields — surfaced as time-series graphs in Garmin Connect
     // after the activity syncs to the phone.
@@ -31,10 +32,14 @@ class BmsView extends WatchUi.DataField {
 
         _config     = new Config();
         _reading    = new BmsReading();
-        _driver     = BmsRegistry.create(_config.bmsType);
         _registeredBmsType = _config.bmsType;
-        _ble        = new BleManager(_driver, _config, _reading);
-        _currentAvg = new CurrentAverager();
+        var drivers = _config.bmsType.equals("auto")
+            ? BmsRegistry.createAll()
+            : [BmsRegistry.create(_config.bmsType)];
+        _ble        = new BleManager(drivers, _config, _reading);
+        _currentAvg     = new CurrentAverager(_config.rollingWindowSecs);
+        _activitySumA   = 0.0;
+        _activityCountA = 0;
         _ble.start();
 
         _fitVoltage = createField(
@@ -58,7 +63,7 @@ class BmsView extends WatchUi.DataField {
             { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "%" }
         );
 
-        _layout = _pickLayout(null);
+        _layout = new AutoLayout();
     }
 
     // Called by app on settings change. We can hot-reload everything *except*
@@ -66,11 +71,14 @@ class BmsView extends WatchUi.DataField {
     // launch. On bms type change we mark a flag and the view nudges the user
     // to restart the activity.
     function reloadConfig() as Void {
+        var prevWindow = _config.rollingWindowSecs;
         _config.reload();
         if (!_config.bmsType.equals(_registeredBmsType)) {
             _bmsTypeChangedNeedsRestart = true;
         }
-        _layout = _pickLayout(null);
+        if (_config.rollingWindowSecs != prevWindow) {
+            _currentAvg = new CurrentAverager(_config.rollingWindowSecs);
+        }
         WatchUi.requestUpdate();
     }
 
@@ -78,8 +86,20 @@ class BmsView extends WatchUi.DataField {
         _tickCount++;
 
         if (_reading.connected) {
-            _currentAvg.sample(_reading.currentA);
-            _reading.currentAvgA = _currentAvg.average();
+            var mode = _config.currentMode;
+            if (mode == Config.CURRENT_INSTANT) {
+                _reading.currentAvgA = null;  // FieldFormatter falls back to currentA
+            } else if (mode == Config.CURRENT_ROLLING) {
+                _currentAvg.sample(_reading.currentA);
+                _reading.currentAvgA = _currentAvg.average();
+            } else {
+                if (_reading.currentA != null) {
+                    _activitySumA   += _reading.currentA;
+                    _activityCountA += 1;
+                }
+                _reading.currentAvgA = (_activityCountA > 0)
+                    ? (_activitySumA / _activityCountA) : null;
+            }
         } else {
             _currentAvg.reset();
             _reading.currentAvgA = null;
@@ -116,10 +136,6 @@ class BmsView extends WatchUi.DataField {
         }
     }
 
-    function onLayout(dc) {
-        _layout = _pickLayout(dc);
-    }
-
     function onUpdate(dc) {
         var w = dc.getWidth();
         var h = dc.getHeight();
@@ -140,7 +156,7 @@ class BmsView extends WatchUi.DataField {
         }
 
         if (!_reading.connected) {
-            LayoutHelpers.drawConnecting(dc, w, h);
+            LayoutHelpers.drawConnecting(dc, w, h, _deviceHintStr());
             return;
         }
 
@@ -150,29 +166,24 @@ class BmsView extends WatchUi.DataField {
             if (f != null) { formatted.add(f); }
         }
         if (formatted.size() == 0) {
-            LayoutHelpers.drawConnecting(dc, w, h);
+            LayoutHelpers.drawConnecting(dc, w, h, _deviceHintStr());
             return;
         }
         _layout.draw(dc, formatted, fgColor, bgColor);
     }
 
-    hidden function _pickLayout(dc) as Layout {
-        var id = _config.layoutId;
-        if (id.equals("one"))   { return new OneFieldLayout(); }
-        if (id.equals("two"))   { return new TwoFieldLayout(); }
-        if (id.equals("three")) { return new ThreeFieldLayout(); }
-        if (id.equals("four"))  { return new FourFieldLayout(); }
-        return _autoLayout(dc);
+    hidden function _deviceHintStr() as String {
+        var driver = _ble.activeDriver();
+        if (driver == null) {
+            return "auto-detect";
+        }
+        var hints = _config.deviceNameHints(driver);
+        var s = "";
+        for (var i = 0; i < hints.size(); i++) {
+            if (i > 0) { s += ", "; }
+            s += hints[i];
+        }
+        return s;
     }
 
-    hidden function _autoLayout(dc) as Layout {
-        var n = 0;
-        for (var i = 0; i < _config.fields.size(); i++) {
-            if (!_config.fields[i].equals("none")) { n++; }
-        }
-        if (n <= 1) { return new OneFieldLayout(); }
-        if (n == 2) { return new TwoFieldLayout(); }
-        if (n == 3) { return new ThreeFieldLayout(); }
-        return new FourFieldLayout();
-    }
 }

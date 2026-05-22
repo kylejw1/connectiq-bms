@@ -17,4 +17,8 @@ module BmsRegistry {
         }
         return new JbdDriver();
     }
+
+    function createAll() as Array {
+        return [new JbdDriver(), new JkDriver(), new Em3evDriver()];
+    }
 }

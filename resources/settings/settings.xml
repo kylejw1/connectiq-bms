@@ -3,6 +3,7 @@
 
     <setting propertyKey="@Properties.bmsType" title="@Strings.SettingBmsType">
         <settingConfig type="list">
+            <listEntry value="3">@Strings.BmsTypeAuto</listEntry>
             <listEntry value="0">@Strings.BmsTypeJbd</listEntry>
             <listEntry value="1">@Strings.BmsTypeJk</listEntry>
             <listEntry value="2">@Strings.BmsTypeEm3ev</listEntry>
@@ -15,13 +16,16 @@
         <settingConfig type="alphaNumeric" maxLength="40"/>
     </setting>
 
-    <setting propertyKey="@Properties.layoutId" title="@Strings.SettingLayout">
+    <setting propertyKey="@Properties.fieldCount" title="@Strings.SettingFieldCount">
         <settingConfig type="list">
-            <listEntry value="0">@Strings.LayoutAuto</listEntry>
-            <listEntry value="1">@Strings.LayoutOne</listEntry>
-            <listEntry value="2">@Strings.LayoutTwo</listEntry>
-            <listEntry value="3">@Strings.LayoutThree</listEntry>
-            <listEntry value="4">@Strings.LayoutFour</listEntry>
+            <listEntry value="1">@Strings.FieldCount1</listEntry>
+            <listEntry value="2">@Strings.FieldCount2</listEntry>
+            <listEntry value="3">@Strings.FieldCount3</listEntry>
+            <listEntry value="4">@Strings.FieldCount4</listEntry>
+            <listEntry value="5">@Strings.FieldCount5</listEntry>
+            <listEntry value="6">@Strings.FieldCount6</listEntry>
+            <listEntry value="7">@Strings.FieldCount7</listEntry>
+            <listEntry value="8">@Strings.FieldCount8</listEntry>
         </settingConfig>
     </setting>
 
@@ -97,6 +101,90 @@
         </settingConfig>
     </setting>
 
+    <setting propertyKey="@Properties.field5" title="@Strings.SettingField5">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.FieldNone</listEntry>
+            <listEntry value="1">@Strings.FieldVoltage</listEntry>
+            <listEntry value="2">@Strings.FieldCurrent</listEntry>
+            <listEntry value="3">@Strings.FieldPower</listEntry>
+            <listEntry value="4">@Strings.FieldCapacity</listEntry>
+            <listEntry value="5">@Strings.FieldDesignCapacity</listEntry>
+            <listEntry value="6">@Strings.FieldSoc</listEntry>
+            <listEntry value="7">@Strings.FieldTemp</listEntry>
+            <listEntry value="8">@Strings.FieldTempMin</listEntry>
+            <listEntry value="9">@Strings.FieldCellMin</listEntry>
+            <listEntry value="10">@Strings.FieldCellMax</listEntry>
+            <listEntry value="11">@Strings.FieldCellDelta</listEntry>
+            <listEntry value="12">@Strings.FieldCycles</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.field6" title="@Strings.SettingField6">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.FieldNone</listEntry>
+            <listEntry value="1">@Strings.FieldVoltage</listEntry>
+            <listEntry value="2">@Strings.FieldCurrent</listEntry>
+            <listEntry value="3">@Strings.FieldPower</listEntry>
+            <listEntry value="4">@Strings.FieldCapacity</listEntry>
+            <listEntry value="5">@Strings.FieldDesignCapacity</listEntry>
+            <listEntry value="6">@Strings.FieldSoc</listEntry>
+            <listEntry value="7">@Strings.FieldTemp</listEntry>
+            <listEntry value="8">@Strings.FieldTempMin</listEntry>
+            <listEntry value="9">@Strings.FieldCellMin</listEntry>
+            <listEntry value="10">@Strings.FieldCellMax</listEntry>
+            <listEntry value="11">@Strings.FieldCellDelta</listEntry>
+            <listEntry value="12">@Strings.FieldCycles</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.field7" title="@Strings.SettingField7">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.FieldNone</listEntry>
+            <listEntry value="1">@Strings.FieldVoltage</listEntry>
+            <listEntry value="2">@Strings.FieldCurrent</listEntry>
+            <listEntry value="3">@Strings.FieldPower</listEntry>
+            <listEntry value="4">@Strings.FieldCapacity</listEntry>
+            <listEntry value="5">@Strings.FieldDesignCapacity</listEntry>
+            <listEntry value="6">@Strings.FieldSoc</listEntry>
+            <listEntry value="7">@Strings.FieldTemp</listEntry>
+            <listEntry value="8">@Strings.FieldTempMin</listEntry>
+            <listEntry value="9">@Strings.FieldCellMin</listEntry>
+            <listEntry value="10">@Strings.FieldCellMax</listEntry>
+            <listEntry value="11">@Strings.FieldCellDelta</listEntry>
+            <listEntry value="12">@Strings.FieldCycles</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.field8" title="@Strings.SettingField8">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.FieldNone</listEntry>
+            <listEntry value="1">@Strings.FieldVoltage</listEntry>
+            <listEntry value="2">@Strings.FieldCurrent</listEntry>
+            <listEntry value="3">@Strings.FieldPower</listEntry>
+            <listEntry value="4">@Strings.FieldCapacity</listEntry>
+            <listEntry value="5">@Strings.FieldDesignCapacity</listEntry>
+            <listEntry value="6">@Strings.FieldSoc</listEntry>
+            <listEntry value="7">@Strings.FieldTemp</listEntry>
+            <listEntry value="8">@Strings.FieldTempMin</listEntry>
+            <listEntry value="9">@Strings.FieldCellMin</listEntry>
+            <listEntry value="10">@Strings.FieldCellMax</listEntry>
+            <listEntry value="11">@Strings.FieldCellDelta</listEntry>
+            <listEntry value="12">@Strings.FieldCycles</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.currentMode" title="@Strings.SettingCurrentMode">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.CurrentModeInstant</listEntry>
+            <listEntry value="1">@Strings.CurrentModeRolling</listEntry>
+            <listEntry value="2">@Strings.CurrentModeActivity</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.rollingWindowSecs" title="@Strings.SettingRollingWindow">
+        <settingConfig type="numeric" min="5" max="300"/>
+    </setting>
+
     <setting propertyKey="@Properties.tempUnit" title="@Strings.SettingTempUnit">
         <settingConfig type="list">
             <listEntry value="0">@Strings.TempUnitC</listEntry>
@@ -113,10 +201,6 @@
     </setting>
 
     <setting propertyKey="@Properties.lowSocPct" title="@Strings.SettingLowSoc">
-        <settingConfig type="numeric" min="0" max="100"/>
-    </setting>
-
-    <setting propertyKey="@Properties.warnSocPct" title="@Strings.SettingWarnSoc">
         <settingConfig type="numeric" min="0" max="100"/>
     </setting>
 

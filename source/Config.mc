@@ -14,13 +14,12 @@ class Config {
     static const BMS_JBD   = 0;
     static const BMS_JK    = 1;
     static const BMS_EM3EV = 2;
+    static const BMS_AUTO  = 3;
 
-    // layoutId codes
-    static const LAYOUT_AUTO  = 0;
-    static const LAYOUT_ONE   = 1;
-    static const LAYOUT_TWO   = 2;
-    static const LAYOUT_THREE = 3;
-    static const LAYOUT_FOUR  = 4;
+    // currentMode codes
+    static const CURRENT_INSTANT  = 0;
+    static const CURRENT_ROLLING  = 1;
+    static const CURRENT_ACTIVITY = 2;
 
     // field codes — keep in sync with settings.xml listEntries
     static const F_NONE             = 0;
@@ -39,13 +38,15 @@ class Config {
 
     var bmsType;            // String id, e.g. "jbd"
     var deviceNameFilter;   // String
-    var layoutId;           // String id, e.g. "auto"
-    var fields;             // Array of String slot keys
+    var fieldCount;         // Number 1-4
+    var fields;             // Array of String slot keys (length == fieldCount)
+    var currentMode;          // Number: CURRENT_INSTANT / CURRENT_ROLLING / CURRENT_ACTIVITY
+    var rollingWindowSecs;    // Number: rolling average window length in seconds
+
     var tempUnit;             // String "c" or "f"
     var lowAhThreshold;       // Float
     var lowVoltageThreshold;  // Float — below this -> red warning bg
     var lowSocPct;            // Number — below this % -> red warning bg
-    var warnSocPct;           // Number — below this % -> yellow text (no bg)
     var pollIntervalTicks;    // Number
 
     function initialize() {
@@ -53,20 +54,26 @@ class Config {
     }
 
     function reload() as Void {
-        bmsType           = _decodeBmsType   (_getNumber("bmsType",  BMS_JBD));
+        bmsType           = _decodeBmsType(_getNumber("bmsType", BMS_JBD));
         deviceNameFilter  = _getString("deviceNameFilter", "");
-        layoutId          = _decodeLayout    (_getNumber("layoutId", LAYOUT_AUTO));
-        fields            = [
+        fieldCount        = _clamp(_getNumber("fieldCount", 4), 1, 8);
+        var allFields     = [
             _decodeField(_getNumber("field1", F_VOLTAGE)),
             _decodeField(_getNumber("field2", F_CURRENT)),
             _decodeField(_getNumber("field3", F_CAPACITY)),
             _decodeField(_getNumber("field4", F_SOC)),
+            _decodeField(_getNumber("field5", F_NONE)),
+            _decodeField(_getNumber("field6", F_NONE)),
+            _decodeField(_getNumber("field7", F_NONE)),
+            _decodeField(_getNumber("field8", F_NONE)),
         ];
+        fields      = allFields.slice(0, fieldCount);
+        currentMode       = _clamp(_getNumber("currentMode", CURRENT_ROLLING), CURRENT_INSTANT, CURRENT_ACTIVITY);
+        rollingWindowSecs = _clamp(_getNumber("rollingWindowSecs", 30), 5, 300);
         tempUnit            = (_getNumber("tempUnit", 0) == 1) ? "f" : "c";
         lowAhThreshold      = _getFloat("lowAhThreshold", 3.0);
         lowVoltageThreshold = _getFloat("lowVoltageThreshold", 42.0);
         lowSocPct           = _getNumber("lowSocPct", 30);
-        warnSocPct          = _getNumber("warnSocPct", 50);
         pollIntervalTicks   = _getNumber("pollIntervalTicks", 2);
     }
 
@@ -85,15 +92,14 @@ class Config {
     function _decodeBmsType(c as Number) as String {
         if (c == BMS_JK)    { return "jk"; }
         if (c == BMS_EM3EV) { return "em3ev"; }
+        if (c == BMS_AUTO)  { return "auto"; }
         return "jbd";
     }
 
-    function _decodeLayout(c as Number) as String {
-        if (c == LAYOUT_ONE)   { return "one"; }
-        if (c == LAYOUT_TWO)   { return "two"; }
-        if (c == LAYOUT_THREE) { return "three"; }
-        if (c == LAYOUT_FOUR)  { return "four"; }
-        return "auto";
+    function _clamp(v as Number, min as Number, max as Number) as Number {
+        if (v < min) { return min; }
+        if (v > max) { return max; }
+        return v;
     }
 
     function _decodeField(c as Number) as String {

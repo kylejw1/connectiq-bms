@@ -75,43 +75,52 @@ module LayoutHelpers {
         return Graphics.FONT_TINY;
     }
 
-    // Static "connecting" indicator: battery silhouette with a fill segment
-    // and a label underneath. No animation.
-    function drawConnecting(dc, w as Number, h as Number) as Void {
+    // Static "connecting" indicator: horizontal battery silhouette with a fill
+    // segment, a "Connecting" label, and an optional device name hint below.
+    function drawConnecting(dc, w as Number, h as Number, deviceHint as String?) as Void {
         var cx = w / 2;
         var cy = h / 2;
         var size = (w < h ? w : h);
 
-        var bw = (size * 32) / 100;   // battery body width
-        var bh = (size * 20) / 100;   // battery body height
-        var tw = (bw * 35) / 100;     // terminal nub width
-        var th = (bh * 22) / 100;     // terminal nub height
-        if (th < 3) { th = 3; }
+        // Horizontal battery body (~2.5:1 aspect ratio)
+        var bh  = (size * 16) / 100;   // body height
+        var bw  = bh * 25 / 10;        // body width = 2.5x height
+        var nw  = (bh * 28) / 100;     // nub width (on the right)
+        var nh  = (bh * 55) / 100;     // nub height (shorter than body)
+        if (nw < 3) { nw = 3; }
+        if (nh < 3) { nh = 3; }
 
         var bodyX = cx - bw / 2;
         var bodyY = cy - bh / 2;
 
-        // Body outline (2px stroke)
+        // Body outline
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(2);
         dc.drawRoundedRectangle(bodyX, bodyY, bw, bh, 3);
         dc.setPenWidth(1);
 
-        // Terminal nub on top
-        dc.fillRectangle(cx - tw / 2, bodyY - th, tw, th);
+        // Terminal nub on right
+        dc.fillRectangle(bodyX + bw, cy - nh / 2, nw, nh);
 
-        // Single fill segment as a static "low/charging" indicator
-        var pad = (bh > 16) ? 3 : 2;
+        // Single fill segment on left (~25% full)
+        var pad  = (bh > 16) ? 3 : 2;
         var segW = (bw - pad * 2) / 4;
-        dc.fillRectangle(bodyX + pad, bodyY + pad, segW, bh - pad * 2);
+        dc.fillRectangle(bodyX + pad, bodyY + pad, segW, bh - pad * 2 - 1);
 
-        // Label
+        // "Connecting" label
         var labelFont = (size < 180) ? Graphics.FONT_XTINY : Graphics.FONT_TINY;
-        var labelH = Graphics.getFontHeight(labelFont);
-        var labelY = bodyY + bh + (labelH / 2) + 4;
-        if (labelY + labelH / 2 < h) {
-            dc.drawText(cx, labelY, labelFont, "Connecting",
-                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        var labelH    = Graphics.getFontHeight(labelFont);
+        var labelY    = bodyY + bh + labelH / 2 + 6;
+        dc.drawText(cx, labelY, labelFont, "Connecting",
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Device hint line
+        if (deviceHint != null && deviceHint.length() > 0) {
+            var hintY = labelY + labelH + 2;
+            if (hintY + labelH / 2 < h) {
+                dc.drawText(cx, hintY, labelFont, deviceHint,
+                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            }
         }
     }
 }

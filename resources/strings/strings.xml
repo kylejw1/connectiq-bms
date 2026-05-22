@@ -3,6 +3,7 @@
   <string id="AppName">BMS</string>
 
   <string id="SettingBmsType">BMS type</string>
+  <string id="BmsTypeAuto">Auto-detect</string>
   <string id="BmsTypeJbd">JBD / Xiaoxiang</string>
   <string id="BmsTypeJk">JK BMS (experimental)</string>
   <string id="BmsTypeEm3ev">EM3EV (experimental)</string>
@@ -10,17 +11,24 @@
   <string id="SettingDeviceFilter">Device name filter</string>
   <string id="SettingDeviceFilterPrompt">Substring of BLE device name (leave blank to use defaults)</string>
 
-  <string id="SettingLayout">Layout</string>
-  <string id="LayoutAuto">Auto (fit screen)</string>
-  <string id="LayoutOne">One field</string>
-  <string id="LayoutTwo">Two fields</string>
-  <string id="LayoutThree">Three fields</string>
-  <string id="LayoutFour">Four fields</string>
+  <string id="SettingFieldCount">Number of fields</string>
+  <string id="FieldCount1">1 field</string>
+  <string id="FieldCount2">2 fields</string>
+  <string id="FieldCount3">3 fields</string>
+  <string id="FieldCount4">4 fields</string>
+  <string id="FieldCount5">5 fields</string>
+  <string id="FieldCount6">6 fields</string>
+  <string id="FieldCount7">7 fields</string>
+  <string id="FieldCount8">8 fields</string>
 
   <string id="SettingField1">Field 1</string>
   <string id="SettingField2">Field 2</string>
   <string id="SettingField3">Field 3</string>
   <string id="SettingField4">Field 4</string>
+  <string id="SettingField5">Field 5</string>
+  <string id="SettingField6">Field 6</string>
+  <string id="SettingField7">Field 7</string>
+  <string id="SettingField8">Field 8</string>
 
   <string id="FieldNone">(none)</string>
   <string id="FieldVoltage">Voltage</string>
@@ -36,6 +44,13 @@
   <string id="FieldCellDelta">Cell delta (mV)</string>
   <string id="FieldCycles">Cycle count</string>
 
+  <string id="SettingCurrentMode">Current display</string>
+  <string id="CurrentModeInstant">Instantaneous</string>
+  <string id="CurrentModeRolling">Rolling avg</string>
+  <string id="CurrentModeActivity">Activity average</string>
+
+  <string id="SettingRollingWindow">Rolling window (seconds)</string>
+
   <string id="SettingTempUnit">Temperature unit</string>
   <string id="TempUnitC">Celsius</string>
   <string id="TempUnitF">Fahrenheit</string>
@@ -43,6 +58,5 @@
   <string id="SettingLowAh">Low capacity threshold (Ah)</string>
   <string id="SettingLowVoltage">Low voltage threshold (V)</string>
   <string id="SettingLowSoc">Low SOC threshold (%) — red bg</string>
-  <string id="SettingWarnSoc">Warn SOC threshold (%) — yellow text</string>
   <string id="SettingPollInterval">Poll interval (seconds)</string>
 </strings>

@@ -19,10 +19,6 @@ class FormattedField {
 // Returns null when the field is "none" or the reading lacks the data.
 module FieldFormatter {
 
-    const C_CHARGING = Graphics.COLOR_BLUE;
-    const C_LOW      = Graphics.COLOR_RED;
-    const C_OK       = Graphics.COLOR_GREEN;
-    const C_WARN     = Graphics.COLOR_YELLOW;
     const C_MUTED    = Graphics.COLOR_LT_GRAY;
     const C_ALERT_BG = Graphics.COLOR_RED;
     const C_ALERT_FG = Graphics.COLOR_WHITE;
@@ -68,8 +64,7 @@ module FieldFormatter {
         // averager warms up (first sample). null only when never connected.
         var a = (r.currentAvgA != null) ? r.currentAvgA : r.currentA;
         if (a == null) { return _muted("A"); }
-        var c = (a < 0) ? C_CHARGING : null;
-        return new FormattedField(a.format("%.1f"), "A", c);
+        return new FormattedField(a.format("%.1f"), "A", null);
     }
 
     function _power(r as BmsReading) as FormattedField? {
@@ -79,8 +74,8 @@ module FieldFormatter {
 
     function _capacity(r as BmsReading, cfg as Config) as FormattedField? {
         if (r.capacityAh == null) { return _muted("Ah"); }
-        var c = (r.capacityAh < cfg.lowAhThreshold) ? C_LOW : C_OK;
-        return new FormattedField(r.capacityAh.format("%.1f"), "Ah", c);
+        if (r.capacityAh < cfg.lowAhThreshold) { return _alert(r.capacityAh.format("%.1f"), "Ah"); }
+        return new FormattedField(r.capacityAh.format("%.1f"), "Ah", null);
     }
 
     function _designCapacity(r as BmsReading) as FormattedField? {
@@ -92,8 +87,7 @@ module FieldFormatter {
         if (r.socPct == null) { return _muted("%"); }
         var text = r.socPct.toString();
         if (r.socPct < cfg.lowSocPct) { return _alert(text, "%"); }
-        var c = (r.socPct < cfg.warnSocPct) ? C_WARN : C_OK;
-        return new FormattedField(text, "%", c);
+        return new FormattedField(text, "%", null);
     }
 
     function _temp(tC, cfg as Config) as FormattedField? {
@@ -112,8 +106,7 @@ module FieldFormatter {
 
     function _cellDelta(r as BmsReading) as FormattedField? {
         if (r.cellDeltaMv == null) { return _muted("mV"); }
-        var c = (r.cellDeltaMv > 50) ? C_WARN : C_OK;
-        return new FormattedField(r.cellDeltaMv.toString(), "mV", c);
+        return new FormattedField(r.cellDeltaMv.toString(), "mV", null);
     }
 
     function _cycles(r as BmsReading) as FormattedField? {
